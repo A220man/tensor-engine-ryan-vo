@@ -1,0 +1,94 @@
+{
+  "realm": "openshell",
+  "enabled": true,
+  "displayName": "OpenShell",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "clients": [
+    {
+      "clientId": "openshell-backend",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "openshell-backend-secret",
+      "redirectUris": ["http://localhost:5173/*", "http://localhost:8000/*"],
+      "webOrigins": ["http://localhost:5173", "http://localhost:8000"],
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": true,
+      "fullScopeAllowed": true,
+      "attributes": {
+        "access.token.lifespan": "1800",
+        "client.secret.creation.time": "1704067200"
+      }
+    },
+    {
+      "clientId": "openshell-frontend",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "openshell-frontend-secret",
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "fullScopeAllowed": true,
+      "pkceRequired": true,
+      "attributes": {
+        "access.token.lifespan": "1800"
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "admin", "description": "Administrator access" },
+      { "name": "operator", "description": "Operator access" },
+      { "name": "analyst", "description": "Analyst read-only access" }
+    ]
+  },
+  "groups": [],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@openshell.local",
+      "credentials": [{ "type": "password", "value": "admin", "temporary": false }],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "operator",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Operator",
+      "lastName": "User",
+      "email": "operator@openshell.local",
+      "credentials": [{ "type": "password", "value": "operator", "temporary": false }],
+      "realmRoles": ["operator"]
+    },
+    {
+      "username": "analyst",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Analyst",
+      "lastName": "User",
+      "email": "analyst@openshell.local",
+      "credentials": [{ "type": "password", "value": "analyst", "temporary": false }],
+      "realmRoles": ["analyst"]
+    }
+  ],
+  "identityProviders": []
+}

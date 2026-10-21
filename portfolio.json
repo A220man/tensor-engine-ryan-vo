@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "tensor-engine-ryan-vo",
+  "owner": "A220man",
+  "email": "ryandtvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: tensor-engine-ryan-vo",
+  "workflows": [
+    "Create and manage isolated sandboxes for AI agent execution with configurable resource limits",
+    "Define and enforce network egress and process execution policies with allow/deny decisions",
+    "Investigate security events via audit logs correlated to OpenTelemetry traces using trace.uid"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
