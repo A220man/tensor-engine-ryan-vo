@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "current_feature": "project-skeleton",
+  "features": [
+    {
+      "id": "project-skeleton",
+      "title": "Project skeleton with FastAPI backend and React frontend",
+      "status": "done",
+      "acceptance": [
+        "Backend FastAPI app runs with health endpoint",
+        "Frontend Vite+React+TS builds and serves",
+        "Docker compose with backend, frontend, Keycloak",
+        "Basic CI workflow runs backend/frontend tests",
+        "README with install/run/test steps"
+      ],
+      "implementation": [
+        "backend/app/main.py",
+        "backend/app/api/routes.py",
+        "backend/app/api/schemas.py",
+        "backend/app/services/sandbox.py",
+        "backend/app/services/policy.py",
+        "backend/app/models/__init__.py",
+        "backend/app/core/config.py",
+        "backend/app/core/database.py",
+        "backend/app/core/security.py",
+        "backend/app/core/telemetry.py",
+        "frontend/src/App.tsx",
+        "frontend/src/components/SandboxList.tsx",
+        "frontend/src/components/SandboxDetail.tsx",
+        "frontend/src/components/PolicyList.tsx",
+        "frontend/src/components/AuditLog.tsx",
+        "frontend/src/components/CreateSandboxModal.tsx",
+        "frontend/src/api/client.ts",
+        "frontend/src/types/api.ts",
+        "docker-compose.yaml",
+        ".github/workflows/ci.yml"
+      ],
+      "tests": [
+        "backend/tests/test_health.py",
+        "backend/tests/test_sandboxes.py",
+        "backend/tests/test_policies.py",
+        "backend/tests/test_executions.py",
+        "backend/tests/test_audit.py",
+        "backend/tests/test_policy_service.py",
+        "backend/tests/test_sandbox_service.py",
+        "backend/tests/conftest.py",
+        "frontend/src/App.test.tsx",
+        "frontend/src/test-setup.ts"
+      ]
+    },
+    {
+      "id": "agent-sandbox-execution",
+      "title": "Agent sandbox execution workflow",
+      "status": "planned",
+      "acceptance": [
+        "Create sandbox with policy",
+        "Execute code in sandbox",
+        "Retrieve execution results/logs",
+        "Sandbox lifecycle management"
+      ],
+      "implementation": [],
+      "tests": []
+    },
+    {
+      "id": "policy-evaluation",
+      "title": "Policy evaluation and enforcement",
+      "status": "planned",
+      "acceptance": [
+        "Define network/egress policies",
+        "Evaluate connection requests against policies",
+        "Audit log of policy decisions"
+      ],
+      "implementation": [],
+      "tests": []
+    },
+    {
+      "id": "observability-tracing",
+      "title": "Observability with trace correlation",
+      "status": "planned",
+      "acceptance": [
+        "OTel trace export from supervisor",
+        "OCSF events with trace.uid correlation",
+        "Trace profile schema vendored"
+      ],
+      "implementation": [],
+      "tests": []
+    },
+    {
+      "id": "auth-oidc-keycloak",
+      "title": "OIDC authentication with Keycloak",
+      "status": "planned",
+      "acceptance": [
+        "Keycloak realm import",
+        "Backend session management with HttpOnly cookies",
+        "Frontend PKCE login flow",
+        "Role-based access control"
+      ],
+      "implementation": [],
+      "tests": []
+    }
+  ]
+}

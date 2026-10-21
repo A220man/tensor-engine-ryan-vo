@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: openshell-backend
+    environment:
+      - APP_ENV=development
+      - DEBUG=true
+      - DATABASE_URL=sqlite+aiosqlite:///./openshell.db
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=openshell
+      - KEYCLOAK_CLIENT_ID=openshell-backend
+      - KEYCLOAK_CLIENT_SECRET=
+      - OIDC_DISCOVERY_URL=http://keycloak:8080/realms/openshell/.well-known/openid-configuration
+      - OIDC_ISSUER=http://keycloak:8080/realms/openshell
+      - OIDC_AUDIENCE=openshell-backend
+      - FRONTEND_URL=http://localhost:5173
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_SERVICE_NAME=openshell-backend
+      - DEMO_MODE=true
+    volumes:
+      - ./backend:/app
+      - backend-data:/app/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      - keycloak
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: openshell-frontend
+    ports:
+      - "127.0.0.1:5173:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    container_name: openshell-keycloak
+    command: start-dev --import-realm
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=postgres
+      - KC_DB_URL_PORT=5432
+      - KC_DB_URL_DATABASE=keycloak
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=keycloak
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: openshell-postgres
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.112.0
+    container_name: openshell-otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+      - "127.0.0.1:8888:8888"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8888/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  backend-data:
+  postgres-data:
