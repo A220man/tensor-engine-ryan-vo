@@ -25,13 +25,17 @@ Tests: `backend/tests/test_health.py`, `backend/tests/test_sandboxes.py`, `backe
 
 ### agent-sandbox-execution — Agent sandbox execution workflow
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Create sandbox with policy
 - Execute code in sandbox
 - Retrieve execution results/logs
 - Sandbox lifecycle management
+
+Implementation: `backend/app/services/sandbox.py`, `backend/app/api/routes.py`, `backend/app/models/__init__.py`, `backend/app/api/schemas.py`
+
+Tests: `backend/tests/test_sandbox_service.py`, `backend/tests/test_sandboxes.py`, `backend/tests/test_executions.py`
 
 ### policy-evaluation — Policy evaluation and enforcement
 

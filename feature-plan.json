@@ -51,15 +51,24 @@
     {
       "id": "agent-sandbox-execution",
       "title": "Agent sandbox execution workflow",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "Create sandbox with policy",
         "Execute code in sandbox",
         "Retrieve execution results/logs",
         "Sandbox lifecycle management"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": [
+        "backend/app/services/sandbox.py",
+        "backend/app/api/routes.py",
+        "backend/app/models/__init__.py",
+        "backend/app/api/schemas.py"
+      ],
+      "tests": [
+        "backend/tests/test_sandbox_service.py",
+        "backend/tests/test_sandboxes.py",
+        "backend/tests/test_executions.py"
+      ]
     },
     {
       "id": "policy-evaluation",
