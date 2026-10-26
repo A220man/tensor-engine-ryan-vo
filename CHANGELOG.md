@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.0.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -14,7 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Sandbox lifecycle management (create, start, stop, terminate)
 - Policy engine with network egress and process execution rules
-- Command execution with policy evaluation (allow/deny)
+### Changed
+- Command execution now runs actual subprocesses instead of simulation
+  (backend/app/services/sandbox.py)
 - Audit logging with trace correlation (trace_id, span_id)
 - OIDC authentication via Keycloak (admin/operator/analyst roles)
 - OpenTelemetry instrumentation for FastAPI and SQLAlchemy
