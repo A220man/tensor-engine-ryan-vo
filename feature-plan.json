@@ -51,7 +51,7 @@
     {
       "id": "agent-sandbox-execution",
       "title": "Agent sandbox execution workflow",
-      "status": "in_progress",
+      "status": "done",
       "acceptance": [
         "Create sandbox with policy",
         "Execute code in sandbox",

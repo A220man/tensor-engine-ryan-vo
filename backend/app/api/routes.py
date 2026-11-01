@@ -180,9 +180,22 @@ async def list_executions(
         page_size=page_size,
         total_pages=(total + page_size - 1) // page_size,
     )
+@router.get("/sandboxes/{sandbox_id}/executions/{execution_id}", response_model=ExecutionResponse)
+async def get_execution(
+    sandbox_id: str,
+    execution_id: int,
+    session: AsyncSession = Depends(get_session),
+):
+    service = SandboxService(session)
+    execution = await service.get_execution(execution_id)
+    if not execution:
+        raise HTTPException(status_code=404, detail="Execution not found")
+    # Verify execution belongs to the sandbox
+    if execution.sandbox.sandbox_id != sandbox_id:
+        raise HTTPException(status_code=404, detail="Execution not found")
+    return ExecutionResponse.model_validate(execution)
 
 
-# Audit Log Endpoints
 @router.get("/audit", response_model=PaginatedResponse)
 async def list_audit_logs(
     event_type: Optional[str] = Query(None),
