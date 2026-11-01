@@ -1,9 +1,22 @@
 # Changelog
 
-## 1.1.0 — work-in-progress checkpoint
+## 1.2.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
 
+## 1.1.0 — work-in-progress checkpoint
+
+### Security
+- Fixed command injection vulnerability in `backend/app/services/sandbox.py`: removed dangerous `shell=True` fallback when `FileNotFoundError` occurred during command execution. Commands now always run with `shell=False` using explicit argument lists.
+
+### Added
+- `GET /api/v1/sandboxes/{sandbox_id}/executions/{execution_id}` endpoint for retrieving a single execution by ID.
+- `SandboxService.get_execution(execution_id)` method to fetch execution with sandbox relationship loaded.
+
+### Changed
+- Command execution error handling simplified: `FileNotFoundError` now returns exit code -3 with "Command not found" message instead of attempting shell fallback.
+
+Partial code published for continued development. Known issues: STATUS.md.
 ## 1.0.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.

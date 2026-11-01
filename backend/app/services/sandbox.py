@@ -220,23 +220,9 @@ class SandboxService:
                 stderr = f"Command timed out after {self.execution_timeout} seconds"
                 exit_code = -2
             except FileNotFoundError:
-                # Command not found - try with shell for builtins like echo
-                try:
-                    full_cmd = full_command
-                    result = subprocess.run(
-                        full_cmd,
-                        capture_output=True,
-                        text=True,
-                        timeout=self.execution_timeout,
-                        shell=True,
-                    )
-                    stdout = result.stdout
-                    stderr = result.stderr
-                    exit_code = result.returncode
-                except Exception as e:
-                    stdout = ""
-                    stderr = f"Execution error: {str(e)}"
-                    exit_code = -3
+                stdout = ""
+                stderr = f"Command not found: {command}"
+                exit_code = -3
             except Exception as e:
                 stdout = ""
                 stderr = f"Execution error: {str(e)}"
@@ -280,3 +266,15 @@ class SandboxService:
         result = await self.session.execute(query)
         executions = result.scalars().all()
         return list(executions), total
+
+    async def get_execution(self, execution_id: int) -> Optional[Execution]:
+        with self.tracer.start_as_current_span("sandbox.get_execution") as span:
+            result = await self.session.execute(
+                select(Execution)
+                .options(selectinload(Execution.sandbox))
+                .where(Execution.id == execution_id)
+            )
+            execution = result.scalar_one_or_none()
+            if execution:
+                span.set_attribute("execution.id", execution.id)
+            return execution
