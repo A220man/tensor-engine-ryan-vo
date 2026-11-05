@@ -91,7 +91,7 @@ async def test_sandbox_service_execute_allowed(session: AsyncSession):
     sandbox = await service.create_sandbox("test-sandbox", policy_id=policy.id)
     await service.start_sandbox(sandbox.sandbox_id)
 
-    execution = await service.execute_command(sandbox.sandbox_id, "echo hello world")
+    execution = await service.execute_command(sandbox.sandbox_id, "echo", ["hello", "world"])
     assert execution.exit_code == 0
     assert "hello world" in execution.stdout
 
