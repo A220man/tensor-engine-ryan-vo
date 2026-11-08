@@ -1,4 +1,5 @@
 from typing import Optional, List
+import fnmatch
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import PolicyRule, PolicyAction, Sandbox, AuditLog
@@ -81,6 +82,10 @@ class PolicyService:
             await self.session.flush()
             return True
 
+    def _match_host(self, pattern: str, host: str) -> bool:
+        """Match host against pattern with wildcard support."""
+        return fnmatch.fnmatch(host, pattern)
+
     async def evaluate_connection(
         self,
         sandbox: Sandbox,
@@ -107,11 +112,11 @@ class PolicyService:
 
             # Check if policy matches
             matches = True
-            if policy.destination_host and policy.destination_host != destination_host:
+            if policy.destination_host:
+                matches = self._match_host(policy.destination_host, destination_host)
+            if matches and policy.destination_port and policy.destination_port != destination_port:
                 matches = False
-            if policy.destination_port and policy.destination_port != destination_port:
-                matches = False
-            if policy.protocol and policy.protocol != protocol:
+            if matches and policy.protocol and policy.protocol != protocol:
                 matches = False
 
             decision = policy.action if matches else PolicyAction.DENY
@@ -141,7 +146,6 @@ class PolicyService:
 
             matches = True
             if policy.command_pattern:
-                import fnmatch
                 matches = fnmatch.fnmatch(command, policy.command_pattern)
 
             decision = policy.action if matches else PolicyAction.DENY
