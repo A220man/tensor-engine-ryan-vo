@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-project-skeleton
+policy-evaluation
 
 ## Roadmap
 
@@ -39,12 +39,18 @@ Tests: `backend/tests/test_sandbox_service.py`, `backend/tests/test_sandboxes.py
 
 ### policy-evaluation — Policy evaluation and enforcement
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Define network/egress policies
 - Evaluate connection requests against policies
 - Audit log of policy decisions
+- Wildcard pattern matching for destination_host (e.g., *.example.com)
+- Wildcard pattern matching for command_pattern (e.g., echo *)
+
+Implementation: `backend/app/services/policy.py`, `backend/app/api/routes.py`, `backend/app/api/schemas.py`, `backend/app/models/__init__.py`, `frontend/src/components/PolicyList.tsx`
+
+Tests: `backend/tests/test_policy_service.py`, `backend/tests/test_policies.py`
 
 ### observability-tracing — Observability with trace correlation
 

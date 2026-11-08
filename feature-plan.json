@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "project-skeleton",
+  "current_feature": "policy-evaluation",
   "features": [
     {
       "id": "project-skeleton",
@@ -73,14 +73,25 @@
     {
       "id": "policy-evaluation",
       "title": "Policy evaluation and enforcement",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "Define network/egress policies",
         "Evaluate connection requests against policies",
-        "Audit log of policy decisions"
+        "Audit log of policy decisions",
+        "Wildcard pattern matching for destination_host (e.g., *.example.com)",
+        "Wildcard pattern matching for command_pattern (e.g., echo *)"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": [
+        "backend/app/services/policy.py",
+        "backend/app/api/routes.py",
+        "backend/app/api/schemas.py",
+        "backend/app/models/__init__.py",
+        "frontend/src/components/PolicyList.tsx"
+      ],
+      "tests": [
+        "backend/tests/test_policy_service.py",
+        "backend/tests/test_policies.py"
+      ]
     },
     {
       "id": "observability-tracing",
