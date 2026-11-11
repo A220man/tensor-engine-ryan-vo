@@ -39,7 +39,7 @@ Tests: `backend/tests/test_sandbox_service.py`, `backend/tests/test_sandboxes.py
 
 ### policy-evaluation — Policy evaluation and enforcement
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - Define network/egress policies
@@ -48,9 +48,9 @@ Acceptance:
 - Wildcard pattern matching for destination_host (e.g., *.example.com)
 - Wildcard pattern matching for command_pattern (e.g., echo *)
 
-Implementation: `backend/app/services/policy.py`, `backend/app/api/routes.py`, `backend/app/api/schemas.py`, `backend/app/models/__init__.py`, `frontend/src/components/PolicyList.tsx`
+Implementation: `backend/app/services/policy.py`, `backend/app/services/sandbox.py`, `backend/app/api/routes.py`, `backend/app/api/schemas.py`, `backend/app/models/__init__.py`, `frontend/src/components/PolicyList.tsx`
 
-Tests: `backend/tests/test_policy_service.py`, `backend/tests/test_policies.py`
+Tests: `backend/tests/test_policy_service.py`, `backend/tests/test_policies.py`, `backend/tests/test_audit.py`
 
 ### observability-tracing — Observability with trace correlation
 

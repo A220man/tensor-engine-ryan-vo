@@ -278,3 +278,78 @@ class SandboxService:
             if execution:
                 span.set_attribute("execution.id", execution.id)
             return execution
+    async def evaluate_connection(
+        self,
+        sandbox_id: str,
+        destination_host: str,
+        destination_port: int,
+        protocol: str = "tcp",
+        trace_id: Optional[str] = None,
+        span_id: Optional[str] = None,
+    ) -> tuple:
+        """Evaluate a network connection request against sandbox's policy."""
+        with self.tracer.start_as_current_span("sandbox.evaluate_connection") as span:
+            sandbox = await self.get_sandbox(sandbox_id)
+            if not sandbox:
+                raise ValueError(f"Sandbox {sandbox_id} not found")
+
+            span.set_attribute("sandbox.id", sandbox.sandbox_id)
+            span.set_attribute("destination.host", destination_host)
+            span.set_attribute("destination.port", destination_port)
+            span.set_attribute("protocol", protocol)
+
+            # Evaluate policy
+            decision, policy = await self.policy_service.evaluate_connection(
+                sandbox, destination_host, destination_port, protocol
+            )
+            span.set_attribute("policy.decision", decision.value)
+
+            # Log audit
+            await self.policy_service.log_audit(
+                event_type="connection_request",
+                sandbox_id=sandbox.sandbox_id,
+                policy_id=policy.id if policy else None,
+                decision=decision.value,
+                details=f"destination_host={destination_host},destination_port={destination_port},protocol={protocol}",
+                trace_id=trace_id,
+            )
+
+            return decision, policy
+    async def evaluate_connection(
+        self,
+        sandbox_id: str,
+        destination_host: str,
+        destination_port: int,
+        protocol: str = "tcp",
+        trace_id: Optional[str] = None,
+        span_id: Optional[str] = None,
+    ) -> tuple:
+        """Evaluate a network connection request against sandbox's policy."""
+        with self.tracer.start_as_current_span("sandbox.evaluate_connection") as span:
+            sandbox = await self.get_sandbox(sandbox_id)
+            if not sandbox:
+                raise ValueError(f"Sandbox {sandbox_id} not found")
+
+            span.set_attribute("sandbox.id", sandbox.sandbox_id)
+            span.set_attribute("destination.host", destination_host)
+            span.set_attribute("destination.port", destination_port)
+            span.set_attribute("protocol", protocol)
+
+            # Evaluate policy
+            decision, policy = await self.policy_service.evaluate_connection(
+                sandbox, destination_host, destination_port, protocol
+            )
+            span.set_attribute("policy.decision", decision.value)
+
+            # Log audit
+            await self.policy_service.log_audit(
+                event_type="connection_request",
+                sandbox_id=sandbox.sandbox_id,
+                policy_id=policy.id if policy else None,
+                decision=decision.value,
+                details=f"destination_host={destination_host},destination_port={destination_port},protocol={protocol}",
+                trace_id=trace_id,
+            )
+
+            return decision, policy
+

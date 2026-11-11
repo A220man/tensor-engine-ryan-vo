@@ -77,3 +77,31 @@ async def test_audit_log_pagination(client: AsyncClient, sample_sandbox_data):
     assert data["page"] == 1
     assert data["page_size"] == 2
     assert data["total_pages"] >= 3
+
+@pytest.mark.asyncio
+async def test_audit_log_connection_request(client: AsyncClient, sample_sandbox_data, sample_policy_data):
+    """Test audit log is created for connection request evaluation."""
+    sample_policy_data["action"] = "allow"
+    sample_policy_data["destination_host"] = "*.example.com"
+    policy_resp = await client.post("/api/v1/policies", json=sample_policy_data)
+    policy_id = policy_resp.json()["id"]
+
+    sample_sandbox_data["policy_id"] = policy_id
+    sandbox_resp = await client.post("/api/v1/sandboxes", json=sample_sandbox_data)
+    sandbox_id = sandbox_resp.json()["sandbox_id"]
+
+    await client.post(
+        f"/api/v1/sandboxes/{sandbox_id}/evaluate-connection",
+        json={"destination_host": "api.example.com", "destination_port": 443, "protocol": "tcp"}
+    )
+
+    response = await client.get("/api/v1/audit?event_type=connection_request")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] >= 1
+    log = data["items"][0]
+    assert log["event_type"] == "connection_request"
+    assert log["sandbox_id"] == sandbox_id
+    assert log["decision"] == "allow"
+    assert log["policy_id"] == policy_id
+
