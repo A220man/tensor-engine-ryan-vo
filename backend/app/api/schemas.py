@@ -67,6 +67,20 @@ class SandboxResponse(SandboxBase):
     policy: Optional[PolicyRuleResponse] = None
 
 
+# Network Connection Evaluation Schemas
+class ConnectionEvaluationRequest(BaseModel):
+    destination_host: str = Field(..., min_length=1, max_length=255)
+    destination_port: int = Field(..., ge=1, le=65535)
+    protocol: str = Field(default="tcp", pattern="^(tcp|udp)$")
+
+
+class ConnectionEvaluationResponse(BaseModel):
+    decision: PolicyAction
+    matched: bool
+    policy_id: Optional[int] = None
+    policy_name: Optional[str] = None
+
+
 # Execution Schemas
 class ExecutionBase(BaseModel):
     command: str = Field(..., min_length=1)

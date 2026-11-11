@@ -73,7 +73,7 @@
     {
       "id": "policy-evaluation",
       "title": "Policy evaluation and enforcement",
-      "status": "in_progress",
+      "status": "done",
       "acceptance": [
         "Define network/egress policies",
         "Evaluate connection requests against policies",
@@ -83,6 +83,7 @@
       ],
       "implementation": [
         "backend/app/services/policy.py",
+        "backend/app/services/sandbox.py",
         "backend/app/api/routes.py",
         "backend/app/api/schemas.py",
         "backend/app/models/__init__.py",
@@ -90,7 +91,8 @@
       ],
       "tests": [
         "backend/tests/test_policy_service.py",
-        "backend/tests/test_policies.py"
+        "backend/tests/test_policies.py",
+        "backend/tests/test_audit.py"
       ]
     },
     {

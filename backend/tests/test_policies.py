@@ -83,3 +83,65 @@ async def test_delete_policy(client: AsyncClient, sample_policy_data):
 
     get_resp = await client.get(f"/api/v1/policies/{policy_id}")
     assert get_resp.status_code == 404
+@pytest.mark.asyncio
+async def test_evaluate_connection_endpoint_allow(client: AsyncClient, sample_sandbox_data, sample_policy_data):
+    """Test the evaluate-connection API endpoint with allowed connection."""
+    sample_policy_data["action"] = "allow"
+    sample_policy_data["destination_host"] = "*.example.com"
+    policy_resp = await client.post("/api/v1/policies", json=sample_policy_data)
+    policy_id = policy_resp.json()["id"]
+
+    sample_sandbox_data["policy_id"] = policy_id
+    sandbox_resp = await client.post("/api/v1/sandboxes", json=sample_sandbox_data)
+    sandbox_id = sandbox_resp.json()["sandbox_id"]
+
+    # Test matching subdomain
+    response = await client.post(
+        f"/api/v1/sandboxes/{sandbox_id}/evaluate-connection",
+        json={"destination_host": "api.example.com", "destination_port": 443, "protocol": "tcp"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["decision"] == "allow"
+    assert data["matched"] is True
+    assert data["policy_id"] == policy_id
+    assert data["policy_name"] == sample_policy_data["name"]
+
+    # Test non-matching domain
+    response = await client.post(
+        f"/api/v1/sandboxes/{sandbox_id}/evaluate-connection",
+        json={"destination_host": "evil.com", "destination_port": 443, "protocol": "tcp"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["decision"] == "deny"
+    assert data["matched"] is False
+    assert data["policy_id"] is None
+
+
+@pytest.mark.asyncio
+async def test_evaluate_connection_endpoint_no_policy(client: AsyncClient, sample_sandbox_data):
+    """Test the evaluate-connection API endpoint with no policy (default deny)."""
+    sandbox_resp = await client.post("/api/v1/sandboxes", json=sample_sandbox_data)
+    sandbox_id = sandbox_resp.json()["sandbox_id"]
+
+    response = await client.post(
+        f"/api/v1/sandboxes/{sandbox_id}/evaluate-connection",
+        json={"destination_host": "api.example.com", "destination_port": 443, "protocol": "tcp"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["decision"] == "deny"
+    assert data["matched"] is False
+    assert data["policy_id"] is None
+
+
+@pytest.mark.asyncio
+async def test_evaluate_connection_endpoint_sandbox_not_found(client: AsyncClient):
+    """Test the evaluate-connection API endpoint with non-existent sandbox."""
+    response = await client.post(
+        "/api/v1/sandboxes/non-existent/evaluate-connection",
+        json={"destination_host": "api.example.com", "destination_port": 443, "protocol": "tcp"}
+    )
+    assert response.status_code == 400
+

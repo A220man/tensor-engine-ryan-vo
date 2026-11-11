@@ -4,6 +4,8 @@ from typing import Optional
 from app.core.database import get_session
 from app.services import PolicyService, SandboxService
 from app.api.schemas import (
+    ConnectionEvaluationRequest,
+    ConnectionEvaluationResponse,
     PolicyRuleCreate, PolicyRuleUpdate, PolicyRuleResponse,
     SandboxCreate, SandboxUpdate, SandboxResponse,
     ExecutionCreate, ExecutionResponse,
@@ -160,6 +162,30 @@ async def execute_command(
             sandbox_id, execution.command, execution.args, trace_id, span_id
         )
         return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/sandboxes/{sandbox_id}/evaluate-connection", response_model=ConnectionEvaluationResponse)
+async def evaluate_connection(
+    sandbox_id: str,
+    request: ConnectionEvaluationRequest,
+    session: AsyncSession = Depends(get_session),
+):
+    """Evaluate a network connection request against sandbox's policy."""
+    service = SandboxService(session)
+    try:
+        decision, policy = await service.evaluate_connection(
+            sandbox_id=sandbox_id,
+            destination_host=request.destination_host,
+            destination_port=request.destination_port,
+            protocol=request.protocol,
+        )
+        return ConnectionEvaluationResponse(
+            decision=decision,
+            matched=policy is not None,
+            policy_id=policy.id if policy else None,
+            policy_name=policy.name if policy else None,
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
