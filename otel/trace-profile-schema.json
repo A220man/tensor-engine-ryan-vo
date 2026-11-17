@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OCSF Trace Profile",
+  "description": "Schema for OCSF trace profile events used for observability.",
+  "type": "object",
+  "required": ["@timestamp", "event_id", "event_uid", "event_type_uid", "category_uid", "severity_id", "product_uid", "event_source", "trace_uid"],
+  "properties": {
+    "@timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event timestamp"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Unique event identifier"
+    },
+    "event_uid": {
+      "type": "string",
+      "description": "Unique event identifier (for OCSF events)"
+    },
+    "event_type_uid": {
+      "type": "integer",
+      "description": "Unique event type identifier"
+    },
+    "category_uid": {
+      "type": "integer",
+      "description": "Unique category identifier"
+    },
+    "severity_id": {
+      "type": "string",
+      "description": "Severity identifier (e.g., '5', '6')"
+    },
+    "product_uid": {
+      "type": "string",
+      "description": "Product identifier"
+    },
+    "event_source": {
+      "type": "string",
+      "description": "Event source (e.g., 'openshell')"
+    },
+    "trace_uid": {
+      "type": "string",
+      "description": "Trace unique identifier (W3C trace ID)"
+    }
+  },
+  "additionalProperties": true
+}
