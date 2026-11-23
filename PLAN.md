@@ -54,12 +54,16 @@ Tests: `backend/tests/test_policy_service.py`, `backend/tests/test_policies.py`,
 
 ### observability-tracing — Observability with trace correlation
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - OTel trace export from supervisor
 - OCSF events with trace.uid correlation
 - Trace profile schema vendored
+
+Implementation: `backend/app/api/routes.py (traces export endpoint)`, `backend/app/core/telemetry.py (get_tracer_provider, extract_w3c_context)`
+
+Tests: `backend/tests/test_traces_export.py`
 
 ### auth-oidc-keycloak — OIDC authentication with Keycloak
 
