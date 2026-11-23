@@ -52,3 +52,24 @@ def shutdown_telemetry() -> None:
     if _tracer_provider:
         _tracer_provider.shutdown()
         _tracer_provider = None
+
+
+def get_tracer_provider() -> TracerProvider | None:
+    """Return the global tracer provider for export by supervisor/collector."""
+    return _tracer_provider
+
+
+def extract_w3c_context(span) -> dict:
+    """Extract W3C tracecontext from a span for OCSF trace_uid correlation.
+
+    Returns dict with trace_id, span_id in hex format compatible with
+    the OCSF trace-profile schema's trace_uid field.
+    """
+    ctx = span.get_span_context()
+    if not ctx:
+        return {}
+    return {
+        "trace_id": format(ctx.trace_id, "032x"),
+        "span_id": format(ctx.span_id, "016x"),
+        "trace_state": ctx.trace_state or "",
+    }

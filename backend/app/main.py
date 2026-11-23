@@ -5,9 +5,9 @@ import structlog
 
 from app.core.config import get_settings
 from app.core.database import init_db, create_tables, close_db
-from app.core.telemetry import init_telemetry, shutdown_telemetry
+from app.core.telemetry import init_telemetry, shutdown_telemetry, get_tracer_provider
 from app.api.routes import router as api_router
-
+from app.api.routes import traces_router
 
 structlog.configure(
     processors=[
@@ -68,6 +68,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(api_router)
+    app.include_router(traces_router)
 
     @app.get("/health", tags=["health"])
     async def health_check():
@@ -76,7 +77,7 @@ def create_app() -> FastAPI:
             "version": "1.0.0",
             "environment": settings.APP_ENV,
             "database": "connected",
-            "telemetry": "enabled" if settings.OTEL_EXPORTER_OTLP_ENDPOINT else "disabled",
+            "telemetry": "enabled" if get_tracer_provider() else "disabled",
         }
 
     return app

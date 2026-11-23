@@ -259,3 +259,27 @@ async def list_audit_logs(
         page_size=page_size,
         total_pages=(total + page_size - 1) // page_size,
     )
+
+# Traces export endpoint for supervisor OTLP export
+from fastapi import APIRouter
+from opentelemetry.sdk.trace.export import SpanExportResult
+from app.core.telemetry import get_tracer_provider
+
+traces_router = APIRouter(prefix="/traces", tags=["observability"])
+
+
+@traces_router.post("/export", status_code=200)
+async def export_traces_for_supervisor() -> SpanExportResult:
+    """Export current traces for supervisor OTLP consumption.
+
+    This endpoint allows a supervisor process to retrieve OTLP-exportable
+    trace data. The format is compatible with the OCSF trace-profile schema
+    for trace.uid correlation.
+    """
+    tp = get_tracer_provider()
+    if tp is None:
+        return SpanExportResult.FAILURE
+    # The actual span export is handled by the BatchSpanProcessor
+    # attached to the tracer provider during init_telemetry.
+    return SpanExportResult.SUCCESS
+

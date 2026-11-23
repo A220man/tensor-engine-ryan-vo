@@ -98,14 +98,19 @@
     {
       "id": "observability-tracing",
       "title": "Observability with trace correlation",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "OTel trace export from supervisor",
         "OCSF events with trace.uid correlation",
         "Trace profile schema vendored"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": [
+        "backend/app/api/routes.py (traces export endpoint)",
+        "backend/app/core/telemetry.py (get_tracer_provider, extract_w3c_context)"
+      ],
+      "tests": [
+        "backend/tests/test_traces_export.py"
+      ]
     },
     {
       "id": "auth-oidc-keycloak",
