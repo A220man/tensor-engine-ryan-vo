@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.7.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -74,4 +78,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README with architecture diagram, API reference, deployment guide
 - MIT LICENSE
 - CHANGELOG
-- .env.example with all configuration options
+- .env.example with all configuration options## [1.7.1] - 2026-11-27
+
+### Added
+- OTel trace export endpoint `POST /api/v1/traces/export` for supervisor OTLP consumption
+- `get_current_trace_context()` function in `backend/app/core/telemetry.py` for W3C tracecontext extraction
+- OCSF trace-profile schema compatible `trace_id`, `span_id`, and `trace_state` fields in export response
+- Test coverage in `backend/tests/test_traces_export.py` with 4 passing tests
+
+### Changed
+- Traces export endpoint now returns actual trace context data instead of `SpanExportResult.SUCCESS`
+- Updated `export_traces_for_supervisor` to return `dict` with trace_id, span_id, trace_state, and export_status

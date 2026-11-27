@@ -2,7 +2,7 @@ import os
 from contextlib import asynccontextmanager
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import SpanExportResult
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
@@ -68,6 +68,24 @@ def extract_w3c_context(span) -> dict:
     ctx = span.get_span_context()
     if not ctx:
         return {}
+    return {
+        "trace_id": format(ctx.trace_id, "032x"),
+        "span_id": format(ctx.span_id, "016x"),
+        "trace_state": ctx.trace_state or "",
+    }
+
+
+def get_current_trace_context() -> dict:
+    """Get the current W3C trace context for OTel trace correlation.
+
+    Returns a dict compatible with the OCSF trace-profile schema's
+    trace_uid field, containing the trace_id and span_id in hex format.
+    """
+    tracer = trace.get_tracer(__name__)
+    current_span = trace.get_current_span()
+    ctx = current_span.get_span_context()
+    if not ctx:
+        return {"trace_id": "", "span_id": "", "trace_state": ""}
     return {
         "trace_id": format(ctx.trace_id, "032x"),
         "span_id": format(ctx.span_id, "016x"),
